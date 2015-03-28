@@ -2,15 +2,15 @@
 
 #include <wchar.h>
 
-typedef struct fRasterizer fRasterizer;
+typedef struct FRasterizer FRasterizer;
 
-typedef struct fRaster
+typedef struct FRaster
 {
 	void *data;
 	int width, height;
 	int origin_x, origin_y;
 }
-fRaster;
+FRaster;
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,11 +19,11 @@ extern "C" {
 void fInit();
 void fDispose();
 
-fRasterizer *fCreateRasterizer(void *font_file_base, long file_size);
-void fDestroyRasterizer(fRasterizer *rasterizer);
+FRasterizer *fCreateRasterizer(void *font_file_base, long file_size);
+void fDestroyRasterizer(FRasterizer *rasterizer);
 
-fRaster *fRasterize(fRasterizer *rasterizer, const wchar_t *text, int size);
-void fFreeRaster(fRaster *raster);
+FRaster *fRasterize(FRasterizer *rasterizer, const wchar_t *text, int size);
+void fFreeRaster(FRaster *raster);
 
 #ifdef __cplusplus
 }

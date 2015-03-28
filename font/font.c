@@ -7,13 +7,12 @@
 
 #include <media/log.h>
 
-struct fRasterizer
+struct FRasterizer
 {
 	FT_Face face;
 };
 
 static FT_Library library;
-static fRasterizer *_ras = NULL;
 
 void fInit()
 {
@@ -29,9 +28,9 @@ void fDispose()
 	FT_Done_FreeType(library);
 }
 
-fRasterizer *fCreateRasterizer(void *font_file_base, long file_size)
+FRasterizer *fCreateRasterizer(void *font_file_base, long file_size)
 {
-	fRasterizer *ras = (fRasterizer*)malloc(sizeof(fRasterizer));
+	FRasterizer *ras = (FRasterizer*)malloc(sizeof(FRasterizer));
 	FT_Error error = FT_New_Memory_Face(library,(FT_Byte*)font_file_base,file_size,0,&ras->face);
 	// FT_Error error = FT_New_Face(library,filename,0,&ras->face);
 	if(error == FT_Err_Unknown_File_Format)
@@ -39,29 +38,19 @@ fRasterizer *fCreateRasterizer(void *font_file_base, long file_size)
 	  printWarn("[error] FT_New_Memory_Face: FT_Err_Unknown_File_Format \n");
 	}
 	else if(error) { printWarn("[error] FT_New_Memory_Face \n"); }
-	_ras = ras;
 	return ras;
 }
 
-void fDestroyRasterizer(fRasterizer *rasterizer)
+void fDestroyRasterizer(FRasterizer *rasterizer)
 {
-	if(!rasterizer)
-	{
-		_ras = rasterizer;
-	}
 	FT_Done_Face(rasterizer->face);
 	free(rasterizer);
 }
 
-fRaster *fRasterize(fRasterizer *rasterizer, const wchar_t *text, int size)
+FRaster *fRasterize(FRasterizer *rasterizer, const wchar_t *text, int size)
 {
 	int i, j;
 	FT_Error error;
-	
-	if(!rasterizer)
-	{
-		rasterizer = _ras;
-	}
 	
 	FT_Face				face = rasterizer->face;
 	int num_chars = wcslen(text);
@@ -183,7 +172,7 @@ fRaster *fRasterize(fRasterizer *rasterizer, const wchar_t *text, int size)
 	int string_width  = bbox.xMax - bbox.xMin;
 	int string_height = bbox.yMax - bbox.yMin;
 	
-	fRaster *raster = (fRaster*)malloc(sizeof(fRaster));
+	FRaster *raster = (FRaster*)malloc(sizeof(FRaster));
 	raster->width = string_width + 2;
 	raster->height = string_height + 2;
 	raster->origin_x = -(bbox.xMin - 1);
@@ -251,7 +240,7 @@ fRaster *fRasterize(fRasterizer *rasterizer, const wchar_t *text, int size)
 	return raster;
 }
 
-void fFreeRaster(fRaster *raster)
+void fFreeRaster(FRaster *raster)
 {
 	free(raster->data);
 	free(raster);
